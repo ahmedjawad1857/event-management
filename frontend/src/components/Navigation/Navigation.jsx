@@ -5,6 +5,14 @@ const Navigation = () => {
   return (
     <nav>
       <ul>
+        <li className="logo">
+          <Link to={"/"}>
+            <img
+              src="/hoga-event-logo.png"
+              alt="Hoga Events | You event management team "
+            />
+          </Link>
+        </li>
         <li>
           <Link to="/" reloadDocument>
             All Events
