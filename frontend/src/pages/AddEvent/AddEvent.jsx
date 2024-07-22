@@ -1,21 +1,24 @@
-import React, { useState } from 'react';
-import './AddEvent.css';
-import { collection, addDoc } from "firebase/firestore";
-import { db } from '../../firebase';
+import React, { useState } from "react";
+import "./AddEvent.css";
+import axios from "axios";
 
 const AddEvent = () => {
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().toLocaleString("en-US", { month: "long" });
+  const currentDate = new Date().getDate();
+  console.log(currentDate);
   const [eventData, setEventData] = useState({
-    heading: '',
+    heading: "",
     date: {
-      day: '',
-      month: 'January',
-      year: ''
+      day: `${currentDate}`,
+      month: `${currentMonth}`,
+      year: `${currentYear}`,
     },
-    location: '',
-    description: '',
-    img: '',
-    link: '',
-    type: 'Hackathon' // Default event type
+    location: "",
+    description: "",
+    img: "",
+    link: "",
+    type: "Hackathon", // Default event type
   });
 
   const handleChange = (e) => {
@@ -32,7 +35,7 @@ const AddEvent = () => {
       ...eventData,
       date: {
         ...eventData.date,
-        [name]: value
+        [name]: value,
       },
     });
   };
@@ -44,29 +47,59 @@ const AddEvent = () => {
 
     const newEvent = {
       id: uniqueId,
-      ...eventData
+      ...eventData,
     };
 
     try {
-      await addDoc(collection(db, "events"), newEvent);
-      console.log('New Event Added:', newEvent);
+      // await addDoc(collection(db, "events"), newEvent);
+      const res = await axios.post("http://localhost:8002/events", newEvent);
+      console.log(res);
+      console.log("New Event Added:", newEvent);
       // Reset form data after successful submission
       setEventData({
-        heading: '',
+        heading: "",
         date: {
-          day: '',
-          month: 'January',
-          year: ''
+          day: `${currentDate}`,
+          month: `${currentMonth}`,
+          year: `${currentYear}`,
         },
-        location: '',
-        description: '',
-        img: '',
-        link: '',
-        type: 'Hackathon'
+        location: "",
+        description: "",
+        img: "",
+        link: "",
+        type: "Hackathon",
       });
+      console.log("data sent to backend");
     } catch (error) {
       console.error("Error adding event: ", error);
     }
+  };
+
+  const dayNum = (monthName) => {
+    const daysInMonth = {
+      January: 31,
+      February: isLeapYear(eventData.date.year) ? 29 : 28,
+      March: 31,
+      April: 30,
+      May: 31,
+      June: 30,
+      July: 31,
+      August: 31,
+      September: 30,
+      October: 31,
+      November: 30,
+      December: 31,
+    };
+    let arr = [];
+    for (let i = 1; i <= daysInMonth[monthName]; i++) {
+      arr.push(i);
+    }
+
+    return arr;
+  };
+
+  const isLeapYear = (year) => {
+    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   };
 
   return (
@@ -84,17 +117,16 @@ const AddEvent = () => {
             required
           />
         </div>
-        <div className='date-group'>
+        <div className="date-group">
           <div className="form-group">
             <label htmlFor="day">Day</label>
-            <input
-              type="number"
-              id="day"
-              name="day"
-              value={eventData.date.day}
-              onChange={handleDateChange}
-              required
-            />
+            <select value={eventData.date.day}>
+              {dayNum(eventData.date.month).map((day) => (
+                <option key={day} value={day}>
+                  {day}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="form-group">
             <label htmlFor="month">Month</label>
@@ -106,10 +138,22 @@ const AddEvent = () => {
               required
             >
               {[
-                'January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
               ].map((month) => (
-                <option key={month} value={month}>{month}</option>
+                <option key={month} value={month}>
+                  {month}
+                </option>
               ))}
             </select>
           </div>
@@ -158,7 +202,10 @@ const AddEvent = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="link">Registration Form Link (Google Forms / Microsoft Forms / Other Forms)</label>
+          <label htmlFor="link">
+            Registration Form Link (Google Forms / Microsoft Forms / Other
+            Forms)
+          </label>
           <input
             type="text"
             id="link"
@@ -177,12 +224,16 @@ const AddEvent = () => {
             onChange={handleChange}
             required
           >
-            {['Hackathon', 'Workshop', 'Competition', 'Other'].map((type) => (
-              <option key={type} value={type}>{type}</option>
+            {["Hackathon", "Workshop", "Competition", "Other"].map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
             ))}
           </select>
         </div>
-        <button type="submit" className="button-88">Add Event</button>
+        <button type="submit" className="button-88">
+          Add Event
+        </button>
       </form>
     </div>
   );
