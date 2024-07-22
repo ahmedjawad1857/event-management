@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import "./AddEvent.css";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const AddEvent = () => {
+  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().toLocaleString("en-US", { month: "long" });
-  const currentDate = new Date().getDate()+1;
-  console.log(currentDate);
   const [eventData, setEventData] = useState({
     heading: "",
     date: {
-      day: `${currentDate}`,
+      day: "",
       month: `${currentMonth}`,
       year: `${currentYear}`,
     },
@@ -51,15 +53,15 @@ const AddEvent = () => {
     };
 
     try {
-      // await addDoc(collection(db, "events"), newEvent);
       const res = await axios.post("http://localhost:8002/events", newEvent);
       console.log(res);
       console.log("New Event Added:", newEvent);
+
       // Reset form data after successful submission
       setEventData({
         heading: "",
         date: {
-          day: `${currentDate}`,
+          day: "",
           month: `${currentMonth}`,
           year: `${currentYear}`,
         },
@@ -69,9 +71,24 @@ const AddEvent = () => {
         link: "",
         type: "Hackathon",
       });
+
+      toast.success("Event added successfully!", {
+        position: "bottom-left",
+        className: "toast-success",
+      });
+
+      // Navigate to home after a delay to ensure the toast is visible
+      setTimeout(() => {
+        navigate("/event/admin");
+        window.location.reload(); // Force reload
+      }, 5000);
       console.log("data sent to backend");
     } catch (error) {
       console.error("Error adding event: ", error);
+      toast.error("Failed to add event!", {
+        position: "bottom-left",
+        className: "toast-error",
+      });
     }
   };
 
@@ -120,7 +137,13 @@ const AddEvent = () => {
         <div className="date-group">
           <div className="form-group">
             <label htmlFor="day">Day</label>
-            <select value={eventData.date.day}>
+            <select
+              id="day"
+              name="day"
+              value={eventData.date.day}
+              onChange={handleDateChange}
+              required
+            >
               {dayNum(eventData.date.month).map((day) => (
                 <option key={day} value={day}>
                   {day}
@@ -235,6 +258,7 @@ const AddEvent = () => {
           Add Event
         </button>
       </form>
+      <ToastContainer />
     </div>
   );
 };

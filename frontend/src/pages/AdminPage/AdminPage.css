@@ -104,3 +104,13 @@
     transform: rotate(360deg);
   }
 }
+
+.toast-success {
+  background-color: green !important;
+  color: white !important;
+}
+
+.toast-error {
+  background-color: red !important;
+  color: white !important;
+}
