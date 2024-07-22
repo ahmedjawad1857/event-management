@@ -22,7 +22,7 @@ const Navigation = () => {
         </li>
         <li>
           <Link to="/event/admin" reloadDocument>
-            Event detaiks
+            Event details
           </Link>
         </li>
       </ul>

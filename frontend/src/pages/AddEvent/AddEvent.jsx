@@ -5,7 +5,7 @@ import axios from "axios";
 const AddEvent = () => {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().toLocaleString("en-US", { month: "long" });
-  const currentDate = new Date().getDate();
+  const currentDate = new Date().getDate()+1;
   console.log(currentDate);
   const [eventData, setEventData] = useState({
     heading: "",
