@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { eventList } from "../utils/EventDatabase";
 const EventContext = createContext();
 
 export const useEventContext = () => {
@@ -13,18 +14,12 @@ export const EventProvider = ({ children }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        // const eventsCollection = collection(db, "events");
-        // const eventsSnapshot = await getDocs(eventsCollection);
-        // const eventsList = eventsSnapshot.docs.map((doc) => ({
-        //   ...doc.data(),
-        //   fid: doc.id,
-        // }));
-        // setEvents(eventsList);
-        // console.log(eventsList);
+        // adding initial events which are in slider
+
         const res = await axios.get("http://localhost:8002/getEvents");
         if (res.data.length > 0) {
-            setEvents(res.data);
-            console.log(res.data);
+          setEvents(res.data);
+          console.log(res.data);
         }
       } catch (error) {
         console.error("Error fetching events: ", error);
